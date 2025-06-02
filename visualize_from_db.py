@@ -89,7 +89,7 @@ def visualize_graph(graph, start_url, output_html_file):
         print("No graph data to visualize.")
         return
 
-    net = Network(notebook=True, cdn_resources='remote',
+    net = Network(notebook=False, cdn_resources='remote',
                   height="750px", width="100%",
                   bgcolor="#222222", font_color="white",
                   directed=True)
