@@ -5,7 +5,7 @@ from urllib.parse import urlparse # For node label shortening
 
 # --- Configuration (must match your previous DuckDB output) ---
 DB_FILE = "website_full_network.duckdb" # Name of your DuckDB file
-OUTPUT_HTML_GRAPH_FROM_DB = "rps_full_network_graph_from_db.html"
+OUTPUT_HTML_GRAPH_FROM_DB = "index.html"
 START_URL = "http://www.rps.or.kr/theme/rps/index/partner_01.php" # Needed for coloring the start node
 
 def create_graph_from_duckdb(db_file, start_url):
@@ -89,10 +89,13 @@ def visualize_graph(graph, start_url, output_html_file):
         print("No graph data to visualize.")
         return
 
-    net = Network(notebook=False, cdn_resources='remote',
-                  height="750px", width="100%",
-                  bgcolor="#222222", font_color="white",
-                  directed=True)
+    net = Network(
+        notebook=False,
+        cdn_resources="remote",
+        height="100%", width="100%",
+        bgcolor="#222222", font_color="white",
+        directed=True
+    )
 
     for node_id, data in graph.nodes(data=True):
         depth = data.get('depth', 0) # Get depth from node data, default to 0
@@ -122,7 +125,6 @@ def visualize_graph(graph, start_url, output_html_file):
         if len(display_label) > 40: # Overall label length
             display_label = display_label[:37] + "..."
 
-
         net.add_node(node_id, label=display_label, color=color,
                      size=15 - (depth * 2), # Make deeper nodes slightly smaller
                      title=node_title_html)
@@ -131,7 +133,10 @@ def visualize_graph(graph, start_url, output_html_file):
         net.add_edge(source, target)
 
     print(f"\nGenerating interactive graph to {output_html_file}...")
-    net.show(output_html_file)
+    # Generate HTML with CDN resources
+    html = net.generate_html(notebook=False)
+    with open(output_html_file, 'w', encoding='utf-8') as f:
+        f.write(html)
     print(f"Interactive graph saved to {output_html_file}")
     print(f"Open '{output_html_file}' in your web browser to view the graph.")
 
